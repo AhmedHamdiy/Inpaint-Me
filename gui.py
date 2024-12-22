@@ -1,33 +1,43 @@
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import filedialog, messagebox
-from PIL import Image, ImageTk
-import os
 import cv2
 import numpy as np
+from PIL import Image, ImageTk
+import os
 from image_processing_algorithm import start  # Make sure to import your algorithm here
+
 
 class ImageProcessorApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Image Processor")
-        
-        # Set up main canvas
-        self.canvas = tk.Canvas(self.root, width=500, height=500, bg="#F0F0F0")  # Light gray background
-        self.canvas.pack(padx=20, pady=20)
+        self.root.geometry("800x600")
+        self.root.configure(bg_color="#2c3e50")
 
-        self.image_label = tk.Label(self.root, text="Select an Image")
-        self.image_label.pack()
+        # Main Frame
+        self.main_frame = ctk.CTkFrame(self.root, width=800, height=600, corner_radius=10)
+        self.main_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
-        # Buttons
-        self.select_btn = tk.Button(self.root, text="Select Image", command=self.select_image)
-        self.select_btn.pack()
+        # Title Label
+        self.title_label = ctk.CTkLabel(self.main_frame, text="Image Processor", font=("Roboto Monto", 24), text_color="white")
+        self.title_label.pack(pady=20)
 
-        self.process_btn = tk.Button(self.root, text="Process Image", state=tk.DISABLED, command=self.process_image)
-        self.process_btn.pack()
+        # Buttons (using customtkinter)
+        self.select_btn = ctk.CTkButton(self.main_frame, text="Select Image", command=self.select_image, width=200, height=40, corner_radius=8)
+        self.select_btn.pack(pady=10)
 
-        self.save_btn = tk.Button(self.root, text="Save Processed Image", state=tk.DISABLED, command=self.save_image)
-        self.save_btn.pack()
+        self.process_btn = ctk.CTkButton(self.main_frame, text="Process Image", state=ctk.DISABLED, command=self.process_image, width=200, height=40, corner_radius=8)
+        self.process_btn.pack(pady=10)
 
+        self.save_btn = ctk.CTkButton(self.main_frame, text="Save Processed Image", state=ctk.DISABLED, command=self.save_image, width=200, height=40, corner_radius=8)
+        self.save_btn.pack(pady=10)
+
+        # Canvas to display the image
+        self.canvas = ctk.CTkCanvas(self.main_frame, width=500, height=400, bg="#34495e")  # Slightly different background
+        self.canvas.pack(pady=20)
+
+        # Internal variables
         self.img_path = None
         self.processed_image = None
         self.output_dir = "output_images"  # Folder where processed images will be saved
@@ -40,7 +50,8 @@ class ImageProcessorApp:
         
         if self.img_path:
             self.display_image(self.img_path)
-            self.process_btn.config(state=tk.NORMAL)  # Enable processing button after image is selected
+            self.process_btn.configure(state=ctk.NORMAL)  # Enable processing button after image is selected
+            
     
     def display_image(self, img_path):
         """ Display image on the canvas """
@@ -75,7 +86,7 @@ class ImageProcessorApp:
 
             # After processing, display the filled region image (not the watershed result)
             self.display_image(self.processed_image)
-            self.save_btn.config(state=tk.NORMAL)  # Enable save button after processing
+            self.save_btn.configure(state=ctk.NORMAL)  # Enable save button after processing
         except Exception as e:
             messagebox.showerror("Error", f"Processing failed: {e}")
 
@@ -113,10 +124,15 @@ class ImageProcessorApp:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    # Initialize the main window using CustomTkinter
+    ctk.set_appearance_mode("System")  # Use system theme (light/dark based on user settings)
+    ctk.set_default_color_theme("blue")  # Set default color theme (blue is a good choice)
+
+    root = ctk.CTk()
     app = ImageProcessorApp(root)
 
     # Enable point selection mode after an image is selected
-    app.select_btn.config(command=lambda: [app.select_image(), app.enable_point_selection()])
+    app.select_btn.configure(command=lambda: [app.select_image(), app.enable_point_selection()])
+
 
     root.mainloop()
