@@ -121,4 +121,3 @@ def get_normals(contour):
     return normals
 
 
-
