@@ -48,3 +48,16 @@ pip list
 ```
 
 This will show you all installed packages and their versions.
+
+
+
+# Deep Learning Based Object Removal
+
+
+- Navigate to `DNNs` Folder
+- Put your Images and Masks in in_lama Folder
+- Run command `bash RunDNN.sh`
+- Wait Till it finish and find your results in `out_lama`
+
+
+
