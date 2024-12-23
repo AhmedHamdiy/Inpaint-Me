@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+from src.inpaint import Inpaint
 
 def show_image(img, filename):
     # Ensure the output directory exists before saving
@@ -108,14 +109,10 @@ def fill_region_and_export(binary_image, x, y, output_dir):
             mask = np.zeros_like(binary_image, dtype=np.uint8)
             cv2.drawContours(mask, [contour], -1, 255, thickness=cv2.FILLED)
             show_image(mask, os.path.join(output_dir, "filled_region.png"))
-            break
+            return mask
 
     if not contour_found:
         raise ValueError("No contour found containing the given point.")
-
-    # Export the final output (optional additional processing)
-    final_output = cv2.bitwise_and(binary_image, mask)
-    show_image(final_output, os.path.join(output_dir, "final_output.png"))
 
 def get_region_fill_sample():
     """
@@ -140,11 +137,18 @@ def start(img, x, y, output_dir):
         output_dir (str): Directory to save the output images.
     """
     result, binary = object_detection(img, debug=False)
-    show_image(result, os.path.join(output_dir, "final_detected_objects.png"))
+    show_image(result, os.path.join(output_dir, "detected_objects.png"))
     show_image(binary, os.path.join(output_dir, "binary_image.png"))
 
     # Call the function to fill the region inside the contour
-    fill_region_and_export(binary, x, y, output_dir)
+    mask = fill_region_and_export(binary, x, y, output_dir)
+    
+    inpaint_algo = Inpaint(img, mask, 9)
+    inpainted_img = inpaint_algo.inpaint(1000)
+    
+    inpainted_img = cv2.cvtColor(inpainted_img, cv2.COLOR_RGB2BGR)
+
+    show_image(inpainted_img, os.path.join(output_dir, "final_result.jpg"))
 
 def show_image(img, filename):
     """

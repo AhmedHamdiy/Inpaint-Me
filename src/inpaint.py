@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-from Utils import *
+from .Utils import *
 
 
 
@@ -98,7 +98,8 @@ class Inpaint:
         return (min_x, min_y), (dist_x, dist_y)
         
     def __init__(self, img, mask, patch_size):
-
+        print("Inpainting")
+        
         self.finish = False
         self.patch_size = patch_size
         self.height, self.width = img.shape[:2]
@@ -144,6 +145,7 @@ class Inpaint:
         self.iterations = iters
 
         for _ in range(self.iterations):
+            print(f"Iteration: {iters - self.iterations}")
             self.inpaint_iter()
 
             if self.finish:

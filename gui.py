@@ -12,7 +12,7 @@ class ImageProcessorApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Image Processor")
-        self.root.geometry("800x600")
+        self.root.geometry("800x1000")
         self.root.configure(bg_color="#2c3e50")
 
         # Main Frame
@@ -34,7 +34,7 @@ class ImageProcessorApp:
         self.save_btn.pack(pady=10)
 
         # Canvas to display the image
-        self.canvas = ctk.CTkCanvas(self.main_frame, width=500, height=400, bg="#34495e")  # Slightly different background
+        self.canvas = ctk.CTkCanvas(self.main_frame, width=1000, height=800, bg="#34495e")  # Slightly different background
         self.canvas.pack(pady=20)
 
         # Internal variables
@@ -82,7 +82,8 @@ class ImageProcessorApp:
         try:
             img = cv2.imread(self.img_path)
             start(img, x, y, self.output_dir)  # Pass the directory to save the output images
-            self.processed_image = os.path.join(self.output_dir, "filled_region.png")
+            self.processed_image = os.path.join(self.output_dir, "final_result.jpg")
+            
 
             # After processing, display the filled region image (not the watershed result)
             self.display_image(self.processed_image)
