@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 from src.inpaint import Inpaint
+from skimage.transform import resize
 
 def show_image(img, filename):
     # Ensure the output directory exists before saving
@@ -127,27 +128,30 @@ def get_region_fill_sample():
     cv2.line(binary_image, (50, 300), (150, 350), 255, thickness=2)
     return binary_image
 
-def start(img, x, y, output_dir):
+def get_binary_image_from_path(drawing_path):
     """
-    Main function to run the object detection and region fill algorithm.
-    Args:
-        img (np.ndarray): The original colorful image.
-        x (int): The x-coordinate of the point inside the image.
-        y (int): The y-coordinate of the point inside the image.
-        output_dir (str): Directory to save the output images.
+    Convert the user's drawing to a binary image where the drawing is white, and the background is black.
     """
-    result, binary = object_detection(img, debug=False)
-    show_image(result, os.path.join(output_dir, "detected_objects.png"))
-    show_image(binary, os.path.join(output_dir, "binary_image.png"))
+    # Read the image from the given path
+    image = cv2.imread(drawing_path, cv2.IMREAD_GRAYSCALE)  # Load in grayscale
 
-    # Call the function to fill the region inside the contour
-    mask = fill_region_and_export(binary, x, y, output_dir)
+    # Threshold the image to create a binary mask
+    _, binary_image = cv2.threshold(image, 1, 255, cv2.THRESH_BINARY)
+
+    return binary_image
+
+def start(img, drawing_path, output_dir):
+
+    mask = get_binary_image_from_path(drawing_path)
     
-    inpaint_algo = Inpaint(img, mask, 9)
+    mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)[1]
+    mask = mask // 255
+    
+    resized_img = cv2.resize(img, (mask.shape[1], mask.shape[0]))
+        
+    inpaint_algo = Inpaint(resized_img, mask, 9, 3)
     inpainted_img = inpaint_algo.inpaint(1000)
     
-    inpainted_img = cv2.cvtColor(inpainted_img, cv2.COLOR_RGB2BGR)
-
     show_image(inpainted_img, os.path.join(output_dir, "final_result.jpg"))
 
 def show_image(img, filename):
