@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageTk
 import os
-from image_processing_algorithm import start  # Make sure to import your algorithm here
+from src.pipeline import start  # Make sure to import your algorithm here
 
 
 class ImageProcessorApp:

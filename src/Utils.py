@@ -1,6 +1,53 @@
 import numpy as np
 import cv2 as cv
 
+
+def compute_texel_size(img):
+    """
+    Compute the texel size based on image size
+    (make sure it's odd so that the kernel has a well-defined center).
+
+    Args:
+        img (np.ndarray): The input image.
+
+    Returns:
+        int: The size of the texel
+    """
+    texel_size = min(img.shape[:-1]) // 30
+
+    # Ensure texel size is odd
+    if texel_size % 2 == 0:
+        texel_size += 1
+    return texel_size
+
+def calculate_gradient(img, point):
+
+    x, y = point
+
+    height, width = img.shape[:2]
+
+    first_x = min(x + 1, width - 1)
+    second_x = max(0, x - 1)
+
+    first_y = min(y + 1, height - 1)
+    second_y = max(0, y - 1)
+
+    x1 = np.float32(img[y, first_x, 0]) + np.float32(img[y, first_x, 1]) + np.float32(img[y, first_x, 2])
+    x2 = np.float32(img[y, second_x, 0]) + np.float32(img[y, second_x, 1]) + np.float32(img[y, second_x, 2])
+    y1 = np.float32(img[first_y, first_x, 0]) + np.float32(img[first_y, first_x, 1]) + np.float32(img[first_y, first_x, 2])
+    y2 = np.float32(img[second_y, first_x, 0]) + np.float32(img[second_y, first_x, 1]) + np.float32(img[second_y, first_x, 2])
+    
+    x1 = np.clip(x1 // 3, 0, 255)
+    x2 = np.clip(x2 // 3, 0, 255)
+    y1 = np.clip(y1 // 3, 0, 255)
+    y2 = np.clip(y2 // 3, 0, 255)
+
+    dx = (x1 - x2) / 2
+    dy = (y1 - y2) / 2
+
+    return dx, dy
+
+
 def generate_rect_mask(img, point1, point2):
 
     height, width = img.shape[:2]
