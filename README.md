@@ -1,5 +1,10 @@
 # Exmplar Based Object Removal
 
+This is an Implementation of exempler based object removal.
+https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/criminisi_cvpr2003.pdf
+
+We Have A NICE GUI if you want to run the code
+
 ## Prerequisites
 
 Make sure you have Python installed on your system. It's recommended to use Python 3.8 or later.
